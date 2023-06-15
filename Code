@@ -1,0 +1,132 @@
+let lightColors = {
+  red: {
+    on: "#ff0000",
+    // off: "#7f0000"
+    off: "#ff0000",
+  },
+  yellow: {
+    on: "#ffff00",
+    // off: "#7f7f00"
+    off: "#ffff00",
+  },
+  green: {
+    on: "#00ff00",
+    // off: "#007f00"
+    off: "#00ff00",
+  }
+};
+
+let lightColor; // Variable to store the current color of the traffic light
+let startTime; // Variable to store the start time when the light is shown
+let reactionTime; // Variable to store the user's reaction time
+let reactionRecord = []; // Array to store the recorded reaction times
+let isPlaying = false; // Variable to track if the simulation is playing or not
+let grayscaleMode = false; // Variable to track if grayscale mode is enabled or not
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  lightColor = ""; // Set initial color to empty
+  startTime = 0; // Initialize start time
+  reactionTime = 0; // Initialize reaction time
+}
+
+function draw() {
+  background(220);
+  drawTrafficLight();
+}
+
+function drawTrafficLight() {
+  let diameter = min(width, height) / 4;
+  let x = width / 2;
+  let y = height / 2;
+
+  if (grayscaleMode) {
+    // Enable grayscale mode
+    filter(GRAY);
+  } else {
+    // Disable grayscale mode
+    filter(POSTERIZE, 3); // Adjust the posterize level if desired
+  }
+
+  // Draw the red light
+  fill(lightColor === "red" ? lightColors.red.on : lightColors.red.off);
+  circle(x, y - diameter, diameter);
+
+  // Draw the yellow light
+  fill(lightColor === "yellow" ? lightColors.yellow.on : lightColors.yellow.off);
+  circle(x, y, diameter);
+
+  // Draw the green light
+  fill(lightColor === "green" ? lightColors.green.on : lightColors.green.off);
+  circle(x, y + diameter, diameter);
+
+  filter(GRAY); // Reset the filter
+  // filter(POSTERIZE, 3); // Reset the filter
+}
+
+function keyPressed() {
+  if (!isPlaying) {
+    if (keyCode === 52) { // Start red instance when key 4 is pressed
+      startInstance("red");
+    } else if (keyCode === 53) { // Start yellow instance when key 5 is pressed
+      startInstance("yellow");
+    } else if (keyCode === 54) { // Start green instance when key 6 is pressed
+      startInstance("green");
+    } else if (keyCode === 71) { // Toggle grayscale mode when key G is pressed
+      grayscaleMode = !grayscaleMode;
+    }
+  } else {
+    if (keyCode === 49 && lightColor === "red") { // Acknowledge red light (key: 1)
+      reactionTime = millis() - startTime;
+      reactionRecord.push({ time: reactionTime, color: "red" });
+      stopInstance();
+    } else if (keyCode === 50 && lightColor === "yellow") { // Acknowledge yellow light (key: 2)
+      reactionTime = millis() - startTime;
+      reactionRecord.push({ time: reactionTime, color: "yellow" });
+      stopInstance();
+    } else if (keyCode === 51 && lightColor === "green") { // Acknowledge green light (key: 3)
+      reactionTime = millis() - startTime;
+      reactionRecord.push({ time: reactionTime, color: "green" });
+      stopInstance();
+    }
+  }
+}
+
+function startInstance(color) {
+  lightColor = color; // Set light color to the given color
+  startTime = millis(); // Record the start time
+  isPlaying = true; // Set the simulation to playing mode
+}
+
+function stopInstance() {
+  lightColor = ""; // Clear the light color
+  isPlaying = false; // Set the simulation to not playing mode
+
+  // Display the recorded reaction times in the console log
+  console.log("Reaction Time Record:");
+  for (let i = 0; i < reactionRecord.length; i++) {
+    console.log(reactionRecord[i].time + " ms - " + reactionRecord[i].color);
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
